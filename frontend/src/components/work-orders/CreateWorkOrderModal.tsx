@@ -39,7 +39,7 @@ export function CreateWorkOrderModal({ isOpen, onClose, onSuccess }: CreateWorkO
       setLocations(locationsRes.data.data || []);
       setItems(itemsRes.data.data || []);
       // Filter for OPERATIONS users
-      const opsUsers = (usersRes.data.data || []).filter((u: any) => u.role === 'OPERATIONS' || u.role === 'ADMIN');
+      const opsUsers = (usersRes.data.data || []).filter((u: any) => u.role?.name === 'OPERATIONS' || u.role?.name === 'ADMIN');
       setUsers(opsUsers);
     } catch (err) {
       console.error('Failed to fetch form data', err);
@@ -128,7 +128,7 @@ export function CreateWorkOrderModal({ isOpen, onClose, onSuccess }: CreateWorkO
           >
             <option value="">Select Operator</option>
             {users.map((user) => (
-              <option key={user.id} value={user.id}>{user.name} ({user.role})</option>
+              <option key={user.id} value={user.id}>{user.name} ({user.role?.name})</option>
             ))}
           </select>
         </div>

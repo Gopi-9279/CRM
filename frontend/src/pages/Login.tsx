@@ -33,8 +33,8 @@ export default function Login() {
       setServerError(null);
       const res = await api.post('/auth/login', data);
       
-      const { access_token, user } = res.data.data;
-      login(access_token, user);
+      const { accessToken, user } = res.data.data;
+      login(accessToken, user);
       
       navigate('/');
     } catch (error: any) {
@@ -104,9 +104,9 @@ export default function Login() {
           <div className="mt-6 border-t border-border pt-4">
             <p className="text-sm text-text-secondary">Demo Accounts:</p>
             <ul className="text-xs text-text-secondary mt-2 space-y-1 list-disc list-inside">
-              <li>admin@minicrp.com / password123</li>
-              <li>ops@minicrp.com / password123</li>
-              <li>sales@minicrp.com / password123</li>
+              <li>admin@demo.com / password123</li>
+              <li>ops@demo.com / password123</li>
+              <li>sales@demo.com / password123</li>
             </ul>
           </div>
         </div>

@@ -18,7 +18,7 @@ export default function Dashboard() {
     const fetchStats = async () => {
       try {
         const [ordersRes, transfersRes, workOrdersRes] = await Promise.all([
-          api.get('/customer-orders'),
+          api.get('/orders'),
           api.get('/transfers'),
           api.get('/work-orders')
         ]);

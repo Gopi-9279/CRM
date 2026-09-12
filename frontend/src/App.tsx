@@ -7,6 +7,7 @@ import Inventory from './pages/Inventory';
 import WorkOrders from './pages/WorkOrders';
 import InternalTransfers from './pages/InternalTransfers';
 import CustomerOrders from './pages/CustomerOrders';
+import Customers from './pages/Customers';
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
             <Route path="/work-orders" element={<WorkOrders />} />
             <Route path="/internal-transfers" element={<InternalTransfers />} />
             <Route path="/customer-orders" element={<CustomerOrders />} />
+            <Route path="/customers" element={<Customers />} />
           </Route>
           
           <Route path="*" element={<Navigate to="/" replace />} />

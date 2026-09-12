@@ -23,7 +23,7 @@ export default function CustomerOrders() {
   const fetchOrders = async () => {
     try {
       setIsLoading(true);
-      const res = await api.get('/customer-orders');
+      const res = await api.get('/orders');
       setOrders(res.data.data);
     } catch (error) {
       console.error('Failed to fetch customer orders', error);

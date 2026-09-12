@@ -106,7 +106,8 @@ export const ordersService = {
       }
 
       const inv = invRows[0];
-      const available_quantity = Number(inv.available_quantity);
+      const available_quantity = Number(inv.physical_quantity) - Number(inv.reserved_quantity);
+    console.log(`ReserveItem debug: inventory ${inv.id} available ${available_quantity}, requested ${orderItem.quantity_requested}`);
       const requested = Number(orderItem.quantity_requested);
 
       // 3. Validate available >= requested
@@ -178,6 +179,6 @@ export const ordersService = {
         where: { id: orderId },
         include: { items: { include: { reservation: true } } },
       });
-    });
+    }, { maxWait: 10000, timeout: 20000 });
   },
 };

@@ -31,7 +31,7 @@ export function CustomerOrderDetailsModal({ isOpen, onClose, orderId, onUpdate }
     try {
       setIsLoading(true);
       setError('');
-      const res = await api.get(`/customer-orders/${orderId}`);
+      const res = await api.get(`/orders/${orderId}`);
       setOrder(res.data.data);
     } catch (err: any) {
       console.error(err);
@@ -44,7 +44,7 @@ export function CustomerOrderDetailsModal({ isOpen, onClose, orderId, onUpdate }
   const handleReserve = async (itemId: string) => {
     try {
       setReservingId(itemId);
-      await api.post(`/customer-orders/${orderId}/reserve`, {
+      await api.post(`/orders/${orderId}/reserve`, {
         order_item_id: itemId
       });
       // Re-fetch details to see the new reservation and status

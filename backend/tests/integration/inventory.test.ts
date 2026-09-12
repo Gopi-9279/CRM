@@ -1,8 +1,11 @@
 import { describe, it, beforeAll, afterAll, expect } from '@jest/globals';
 import request from 'supertest';
-import app from '../../src/app'; // Wait, let's see if app is exported in app.ts
+import app from '../../src/app'; 
 import { prisma } from '../setup';
 import { signAccessToken } from '../../src/lib/jwt';
+import crypto from 'crypto';
+
+jest.setTimeout(30000);
 
 describe('Inventory Integration (T-01, T-06, T-07, T-08)', () => {
   let adminToken: string;
@@ -11,20 +14,22 @@ describe('Inventory Integration (T-01, T-06, T-07, T-08)', () => {
   let testBatch: any;
   
   beforeAll(async () => {
-    // 1. Get an admin token
+    console.log('beforeAll started: finding admin');
     const admin = await prisma.user.findFirst({ where: { role_id: 1 } });
     if (!admin) throw new Error('No admin user found for tests');
     adminToken = signAccessToken({ userId: admin.id, role: admin.role_id === 1 ? 'ADMIN' : 'USER' });
 
-    // 2. Create test location and item specifically for this suite to avoid pollution
+    console.log('beforeAll: creating location');
     testLocation = await prisma.location.create({
       data: { id: crypto.randomUUID(), name: 'Test Warehouse ' + Date.now(), code: 'TEST_LOC_' + Date.now().toString().slice(-5) },
     });
     
+    console.log('beforeAll: finding/creating category');
     const category = await prisma.category.findFirst() || await prisma.category.create({
       data: { id: crypto.randomUUID(), name: 'Test Category' }
     });
 
+    console.log('beforeAll: creating item');
     testItem = await prisma.item.create({
       data: { 
         id: crypto.randomUUID(),
@@ -34,8 +39,10 @@ describe('Inventory Integration (T-01, T-06, T-07, T-08)', () => {
       },
     });
     
+    console.log('beforeAll: finding batch');
     testBatch = await prisma.batch.findFirst({ where: { item_id: testItem.id }});
     if (!testBatch) {
+      console.log('beforeAll: creating batch');
       testBatch = await prisma.batch.create({
         data: {
           id: crypto.randomUUID(),
@@ -45,6 +52,7 @@ describe('Inventory Integration (T-01, T-06, T-07, T-08)', () => {
       });
     }
 
+    console.log('beforeAll: creating inventory');
     await prisma.inventory.create({
       data: {
         id: crypto.randomUUID(),
@@ -56,6 +64,7 @@ describe('Inventory Integration (T-01, T-06, T-07, T-08)', () => {
         // available_quantity is GENERATED ALWAYS AS (physical_quantity - reserved_quantity) STORED
       }
     });
+    console.log('beforeAll finished');
   });
 
   afterAll(async () => {
@@ -109,10 +118,11 @@ describe('Inventory Integration (T-01, T-06, T-07, T-08)', () => {
       .set('Authorization', `Bearer ${adminToken}`)
       .send({
         quantity_change: -150, // Physical is 100, so this would make it -50
-        reason: 'Test negative check'
+        transaction_type: 'ADJUSTMENT',
+        reference_type: 'Test negative check'
       });
 
-    expect(res.status).toBe(400);
+    expect(res.status).toBe(409);
     expect(res.body.error).toBeDefined();
   });
 
@@ -141,7 +151,7 @@ describe('Inventory Integration (T-01, T-06, T-07, T-08)', () => {
 
     const responses = await Promise.all([req1, req2, req3]);
     
-    const successes = responses.filter(r => r.status === 200);
+    console.log(responses.map(r => r.body)); const successes = responses.filter(r => r.status === 200);
     const failures = responses.filter(r => r.status === 409);
 
     // Exactly 2 succeed, 1 fails

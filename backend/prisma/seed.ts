@@ -67,30 +67,30 @@ async function main() {
 
   // 5. Items and Default Batches
   const itemsData = [
-    { id: '11111111-1111-1111-1111-111111111111', sku: 'RM-STEEL', name: 'Steel Sheet', category_id: catRaw.id, unit_of_measure: 'KG', allow_fractional: true },
-    { id: '22222222-2222-2222-2222-222222222222', sku: 'RM-PAINT', name: 'Blue Paint', category_id: catRaw.id, unit_of_measure: 'L', allow_fractional: true },
-    { id: '33333333-3333-3333-3333-333333333333', sku: 'PKG-BOX', name: 'Standard Box', category_id: catPackaging.id, unit_of_measure: 'EA', allow_fractional: false },
-    { id: '44444444-4444-4444-4444-444444444444', sku: 'FG-WIDGET-A', name: 'Widget Model A', category_id: catFinished.id, unit_of_measure: 'EA', allow_fractional: false },
-    { id: '55555555-5555-5555-5555-555555555555', sku: 'FG-WIDGET-B', name: 'Widget Model B', category_id: catFinished.id, unit_of_measure: 'EA', allow_fractional: false }
+    { id: '11111111-1111-4111-8111-111111111111', sku: 'RM-STEEL', name: 'Steel Sheet', category_id: catRaw.id, unit_of_measure: 'KG', allow_fractional: true },
+    { id: '22222222-2222-4222-8222-222222222222', sku: 'RM-PAINT', name: 'Blue Paint', category_id: catRaw.id, unit_of_measure: 'L', allow_fractional: true },
+    { id: '33333333-3333-4333-8333-333333333333', sku: 'PKG-BOX', name: 'Standard Box', category_id: catPackaging.id, unit_of_measure: 'EA', allow_fractional: false },
+    { id: '44444444-4444-4444-8444-444444444444', sku: 'FG-WIDGET-A', name: 'Widget Model A', category_id: catFinished.id, unit_of_measure: 'EA', allow_fractional: false },
+    { id: '55555555-5555-4555-8555-555555555555', sku: 'FG-WIDGET-B', name: 'Widget Model B', category_id: catFinished.id, unit_of_measure: 'EA', allow_fractional: false }
   ];
 
   for (const item of itemsData) {
-    await prisma.item.upsert({ where: { sku: item.sku }, update: {}, create: item });
+    await prisma.item.upsert({ where: { sku: item.sku }, update: { id: item.id }, create: item });
     await prisma.batch.upsert({
       where: { item_id_batch_number: { item_id: item.id, batch_number: 'DEFAULT' } },
       update: {},
-      create: { id: `b0000000-0000-0000-0000-${item.id.split('-')[4]}`, item_id: item.id, batch_number: 'DEFAULT' }
+      create: { id: `b0000000-0000-4000-8000-${item.id.split('-')[4]}`, item_id: item.id, batch_number: 'DEFAULT' }
     });
   }
   console.log('Items & Default Batches created.');
 
   // 6. Inventory Initial Stock
   const inventorySetup = [
-    { id: 'a1111111-1111-1111-1111-111111111111', item_id: itemsData[0].id, location_id: locationA.id, batch_id: `b0000000-0000-0000-0000-${itemsData[0].id.split('-')[4]}`, qty: 500 },
-    { id: 'a2222222-2222-2222-2222-222222222222', item_id: itemsData[1].id, location_id: locationA.id, batch_id: `b0000000-0000-0000-0000-${itemsData[1].id.split('-')[4]}`, qty: 100 },
-    { id: 'a3333333-3333-3333-3333-333333333333', item_id: itemsData[2].id, location_id: locationA.id, batch_id: `b0000000-0000-0000-0000-${itemsData[2].id.split('-')[4]}`, qty: 1000 },
-    { id: 'a4444444-4444-4444-4444-444444444444', item_id: itemsData[3].id, location_id: locationB.id, batch_id: `b0000000-0000-0000-0000-${itemsData[3].id.split('-')[4]}`, qty: 50 },
-    { id: 'a5555555-5555-5555-5555-555555555555', item_id: itemsData[4].id, location_id: locationB.id, batch_id: `b0000000-0000-0000-0000-${itemsData[4].id.split('-')[4]}`, qty: 25 }
+    { id: 'a1111111-1111-4111-8111-111111111111', item_id: itemsData[0].id, location_id: locationA.id, batch_id: `b0000000-0000-4000-8000-${itemsData[0].id.split('-')[4]}`, qty: 500 },
+    { id: 'a2222222-2222-4222-8222-222222222222', item_id: itemsData[1].id, location_id: locationA.id, batch_id: `b0000000-0000-4000-8000-${itemsData[1].id.split('-')[4]}`, qty: 100 },
+    { id: 'a3333333-3333-4333-8333-333333333333', item_id: itemsData[2].id, location_id: locationA.id, batch_id: `b0000000-0000-4000-8000-${itemsData[2].id.split('-')[4]}`, qty: 1000 },
+    { id: 'a4444444-4444-4444-8444-444444444444', item_id: itemsData[3].id, location_id: locationB.id, batch_id: `b0000000-0000-4000-8000-${itemsData[3].id.split('-')[4]}`, qty: 50 },
+    { id: 'a5555555-5555-4555-8555-555555555555', item_id: itemsData[4].id, location_id: locationB.id, batch_id: `b0000000-0000-4000-8000-${itemsData[4].id.split('-')[4]}`, qty: 25 }
   ];
 
   for (const inv of inventorySetup) {
@@ -111,7 +111,7 @@ async function main() {
       // Add audit log
       await prisma.inventoryTransaction.create({
         data: {
-          id: `c0000000-0000-0000-0000-${inv.id.split('-')[4]}`,
+          id: `c0000000-0000-4000-8000-${inv.id.split('-')[4]}`,
           inventory_id: inv.id,
           transaction_type: 'RECEIPT',
           quantity_change: inv.qty,

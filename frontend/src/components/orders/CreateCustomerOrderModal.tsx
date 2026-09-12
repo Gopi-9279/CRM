@@ -110,7 +110,11 @@ export function CreateCustomerOrderModal({ isOpen, onClose, onSuccess }: CreateC
       setOrderItems([{ id: crypto.randomUUID(), item_id: '', location_id: '', batch_id: '', quantity_requested: '' }]);
     } catch (err: any) {
       console.error(err);
-      setError(err.response?.data?.error?.message || 'Failed to create customer order.');
+      let errMsg = err.response?.data?.error?.message || 'Failed to create customer order.';
+      if (err.response?.data?.error?.details) {
+        errMsg += ': ' + JSON.stringify(err.response.data.error.details);
+      }
+      setError(errMsg);
     } finally {
       setIsLoading(false);
     }

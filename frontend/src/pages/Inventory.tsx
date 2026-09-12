@@ -46,7 +46,8 @@ export default function Inventory() {
       setIsAdjusting(true);
       await api.patch(`/inventory/${selectedRecord.id}`, {
         quantity_change: adjustQuantity,
-        reason: adjustReason,
+        transaction_type: 'ADJUSTMENT',
+        reference_type: adjustReason || 'MANUAL',
         idempotency_key: crypto.randomUUID(), // Prevent double submission
       });
       setIsModalOpen(false);
@@ -93,10 +94,10 @@ export default function Inventory() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">{row.location.name}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">{row.item.sku}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary text-right">{row.physical_quantity}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-warning text-right">{row.reserved_quantity}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-success text-right font-bold">{row.available_quantity}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-warning text-right">{Number(row.reserved_quantity)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-success text-right font-bold">{Number(row.physical_quantity) - Number(row.reserved_quantity)}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      {(user?.role === 'ADMIN' || user?.role === 'OPERATIONS') && (
+                      {(user?.role === 'ADMIN' || user?.role === 'OPERATIONS' || user?.role?.name === 'ADMIN' || user?.role?.name === 'OPERATIONS') && (
                         <Button variant="outline" size="sm" onClick={() => openAdjustModal(row)}>
                           Adjust
                         </Button>
