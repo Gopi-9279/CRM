@@ -7,6 +7,7 @@ describe('Inventory Integration (T-01, T-06, T-07, T-08)', () => {
   let adminToken: string;
   let testItem: any;
   let testLocation: any;
+  let testBatch: any;
   
   beforeAll(async () => {
     // 1. Get an admin token
@@ -32,7 +33,7 @@ describe('Inventory Integration (T-01, T-06, T-07, T-08)', () => {
       },
     });
     
-    let testBatch = await prisma.batch.findFirst({ where: { item_id: testItem.id }});
+    testBatch = await prisma.batch.findFirst({ where: { item_id: testItem.id }});
     if (!testBatch) {
       testBatch = await prisma.batch.create({
         data: {
@@ -58,7 +59,11 @@ describe('Inventory Integration (T-01, T-06, T-07, T-08)', () => {
 
   afterAll(async () => {
     // Cleanup
+    await prisma.reservation.deleteMany();
+    await prisma.inventoryTransaction.deleteMany();
+    await prisma.customerOrder.deleteMany();
     await prisma.inventory.deleteMany({ where: { location_id: testLocation.id } });
+    await prisma.batch.deleteMany({ where: { item_id: testItem.id } });
     await prisma.item.delete({ where: { id: testItem.id } });
     await prisma.location.delete({ where: { id: testLocation.id } });
   });
@@ -66,19 +71,28 @@ describe('Inventory Integration (T-01, T-06, T-07, T-08)', () => {
   // Belongs to Phase 13 (Orders)
   it('T-01: Cannot reserve more than available (400 or 409)', async () => {
     // Attempt to create a customer order for 150 items
-    const res = await request(app)
+    const orderRes = await request(app)
       .post('/api/v1/orders')
       .set('Authorization', `Bearer ${adminToken}`)
       .send({
-        customer_name: 'Overbooker Corp',
-        location_id: testLocation.id,
+        customer_reference: 'Overbooker Corp',
         items: [
-          { item_id: testItem.id, quantity: 150 }
+          { item_id: testItem.id, location_id: testLocation.id, batch_id: testBatch.id, quantity_requested: 150 }
         ]
       });
+      
+    expect(orderRes.status).toBe(201);
+    const order = orderRes.body.data;
+    const orderItemId = order.items[0].id;
+
+    // Now try to reserve it
+    const res = await request(app)
+      .post(`/api/v1/orders/${order.id}/reserve`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ order_item_id: orderItemId });
     
     // The backend should return an error because available is 100
-    expect(res.status).toBe(400); 
+    expect(res.status).toBe(409); 
     expect(res.body.error).toBeDefined();
     expect(res.body.error.message).toContain('Insufficient stock');
   });
@@ -106,21 +120,28 @@ describe('Inventory Integration (T-01, T-06, T-07, T-08)', () => {
     // We have 100 available. We fire three concurrent requests, each asking for 40.
     // Only two should succeed (80 total). The third (40) should fail because 100 < 80 + 40.
     const createOrderParams = {
-      customer_name: 'Concurrent Corp',
-      location_id: testLocation.id,
+      customer_reference: 'Concurrent Corp',
       items: [
-        { item_id: testItem.id, quantity: 40 }
+        { item_id: testItem.id, location_id: testLocation.id, batch_id: testBatch.id, quantity_requested: 40 }
       ]
     };
 
-    const req1 = request(app).post('/api/v1/orders').set('Authorization', `Bearer ${adminToken}`).send(createOrderParams);
-    const req2 = request(app).post('/api/v1/orders').set('Authorization', `Bearer ${adminToken}`).send(createOrderParams);
-    const req3 = request(app).post('/api/v1/orders').set('Authorization', `Bearer ${adminToken}`).send(createOrderParams);
+    const orderRes1 = await request(app).post('/api/v1/orders').set('Authorization', `Bearer ${adminToken}`).send(createOrderParams);
+    const orderRes2 = await request(app).post('/api/v1/orders').set('Authorization', `Bearer ${adminToken}`).send(createOrderParams);
+    const orderRes3 = await request(app).post('/api/v1/orders').set('Authorization', `Bearer ${adminToken}`).send(createOrderParams);
+
+    const order1 = orderRes1.body.data;
+    const order2 = orderRes2.body.data;
+    const order3 = orderRes3.body.data;
+
+    const req1 = request(app).post(`/api/v1/orders/${order1.id}/reserve`).set('Authorization', `Bearer ${adminToken}`).send({ order_item_id: order1.items[0].id });
+    const req2 = request(app).post(`/api/v1/orders/${order2.id}/reserve`).set('Authorization', `Bearer ${adminToken}`).send({ order_item_id: order2.items[0].id });
+    const req3 = request(app).post(`/api/v1/orders/${order3.id}/reserve`).set('Authorization', `Bearer ${adminToken}`).send({ order_item_id: order3.items[0].id });
 
     const responses = await Promise.all([req1, req2, req3]);
     
-    const successes = responses.filter(r => r.status === 201);
-    const failures = responses.filter(r => r.status === 400);
+    const successes = responses.filter(r => r.status === 200);
+    const failures = responses.filter(r => r.status === 409);
 
     // Exactly 2 succeed, 1 fails
     expect(successes.length).toBe(2);
@@ -131,8 +152,8 @@ describe('Inventory Integration (T-01, T-06, T-07, T-08)', () => {
       where: { item_id: testItem.id, location_id: testLocation.id }
     });
 
-    expect(inv?.physical_quantity).toBe(100);
-    expect(inv?.reserved_quantity).toBe(80); // 40 + 40
-    expect(inv?.available_quantity).toBe(20);
+    expect(Number(inv?.physical_quantity)).toBe(100);
+    expect(Number(inv?.reserved_quantity)).toBe(80); // 40 + 40
+    expect(Number(inv?.available_quantity)).toBe(20);
   });
 });

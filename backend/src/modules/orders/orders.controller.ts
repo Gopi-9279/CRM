@@ -18,7 +18,7 @@ export const ordersController = {
 
   async create(req: Request, res: Response, next: NextFunction) {
     try {
-      const userId = (req as any).user.id;
+      const userId = (req as any).user.userId;
       const order = await ordersService.create(req.body, userId);
       res.status(201).json({ success: true, data: order });
     } catch (error) { next(error); }
@@ -26,7 +26,7 @@ export const ordersController = {
 
   async reserveItem(req: Request, res: Response, next: NextFunction) {
     try {
-      const userId = (req as any).user.id;
+      const userId = (req as any).user.userId;
       const order = await ordersService.reserveItem(req.params.id as string, req.body.order_item_id, userId);
       res.status(200).json({ success: true, data: order });
     } catch (error) { next(error); }

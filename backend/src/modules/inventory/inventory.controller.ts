@@ -35,7 +35,7 @@ export const inventoryController = {
 
   async adjustStock(req: Request, res: Response, next: NextFunction) {
     try {
-      const userId = (req as any).user.id;
+      const userId = (req as any).user.userId;
       const inventory = await inventoryService.adjustStock(req.params.id as string, req.body, userId);
       res.status(200).json({ success: true, data: inventory });
     } catch (error) { next(error); }

@@ -22,7 +22,7 @@ export const workOrdersController = {
 
   async create(req: Request, res: Response, next: NextFunction) {
     try {
-      const userId = (req as any).user.id;
+      const userId = (req as any).user.userId;
       const wo = await workOrdersService.create(req.body, userId);
       res.status(201).json({ success: true, data: wo });
     } catch (error) { next(error); }
@@ -30,7 +30,7 @@ export const workOrdersController = {
 
   async updateStatus(req: Request, res: Response, next: NextFunction) {
     try {
-      const userId = (req as any).user.id;
+      const userId = (req as any).user.userId;
       const wo = await workOrdersService.updateStatus(req.params.id as string, req.body.status, userId);
       res.status(200).json({ success: true, data: wo });
     } catch (error) { next(error); }
