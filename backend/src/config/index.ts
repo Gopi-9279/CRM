@@ -4,10 +4,10 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const envSchema = z.object({
-  PORT: z.string().default('4000').transform(Number),
+  PORT: z.string().transform(Number),
   DATABASE_URL: z.string().url(),
   JWT_SECRET: z.string().min(1),
-  NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+  NODE_ENV: z.enum(['development', 'production', 'test']),
 });
 
 const _env = envSchema.safeParse(process.env);
