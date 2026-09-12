@@ -14,6 +14,7 @@ import batchesRoutes from './modules/batches/batches.routes';
 import inventoryRoutes from './modules/inventory/inventory.routes';
 import workOrdersRoutes from './modules/work-orders/work-orders.routes';
 import transfersRoutes from './modules/transfers/transfers.routes';
+import ordersRoutes from './modules/orders/orders.routes';
 
 const app = express();
 
@@ -47,6 +48,7 @@ app.use('/api/v1/batches', batchesRoutes);
 app.use('/api/v1/inventory', inventoryRoutes);
 app.use('/api/v1/work-orders', workOrdersRoutes);
 app.use('/api/v1/transfers', transfersRoutes);
+app.use('/api/v1/orders', ordersRoutes);
 
 // Global Error Handler
 app.use(errorHandler);
