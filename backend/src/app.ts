@@ -6,6 +6,11 @@ import pinoHttp from 'pino-http';
 import { logger } from './lib/logger';
 import { errorHandler } from './middleware/errorHandler';
 import authRoutes from './modules/auth/auth.routes';
+import usersRoutes from './modules/users/users.routes';
+import locationsRoutes from './modules/locations/locations.routes';
+import categoriesRoutes from './modules/categories/categories.routes';
+import itemsRoutes from './modules/items/items.routes';
+import batchesRoutes from './modules/batches/batches.routes';
 
 const app = express();
 
@@ -31,6 +36,11 @@ app.get('/health', (req, res) => {
 
 // Routes will be mounted here
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/users', usersRoutes);
+app.use('/api/v1/locations', locationsRoutes);
+app.use('/api/v1/categories', categoriesRoutes);
+app.use('/api/v1/items', itemsRoutes);
+app.use('/api/v1/batches', batchesRoutes);
 
 // Global Error Handler
 app.use(errorHandler);
