@@ -21,9 +21,7 @@ const app = express();
 app.use(helmet());
 app.use(
   cors({
-    origin: process.env.VITE_API_BASE_URL
-      ? [process.env.VITE_API_BASE_URL.replace('/api/v1', '')]
-      : '*',
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
     credentials: true,
   }),
 );
