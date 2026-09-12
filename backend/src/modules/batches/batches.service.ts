@@ -1,8 +1,7 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../../db/prisma';
 import { z } from 'zod';
 import crypto from 'crypto';
 
-const prisma = new PrismaClient();
 
 export const createBatchSchema = z.object({
   body: z.object({

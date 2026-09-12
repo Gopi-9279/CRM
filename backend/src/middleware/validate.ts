@@ -14,7 +14,8 @@ export const validate = (schema: ZodSchema) => {
     } catch (error) {
       if (error instanceof ZodError) {
         const details: Record<string, string> = {};
-        (error as any).errors.forEach((e: any) => {
+        const errs = error.issues || [];
+        errs.forEach((e: any) => {
           if (e.path.length > 1) {
             details[e.path.slice(1).join('.')] = e.message;
           } else {

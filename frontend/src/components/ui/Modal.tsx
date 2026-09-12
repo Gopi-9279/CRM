@@ -6,9 +6,10 @@ export interface ModalProps {
   onClose: () => void;
   title: string;
   children: React.ReactNode;
+  className?: string;
 }
 
-export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
+export const Modal = ({ isOpen, onClose, title, children, className = '' }: ModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -32,7 +33,7 @@ export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 sm:p-0">
       <div 
-        className="bg-surface rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] flex flex-col"
+        className={`bg-surface rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] flex flex-col ${className}`}
         ref={modalRef}
       >
         <div className="flex items-center justify-between px-6 py-4 border-b border-border">

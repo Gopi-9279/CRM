@@ -11,7 +11,7 @@ export const transfersController = {
 
   async create(req: Request, res: Response, next: NextFunction) {
     try {
-      const userId = (req as any).user.id;
+      const userId = (req as any).user.userId;
       const transfer = await transfersService.create(req.body, userId);
       res.status(201).json({ success: true, data: transfer });
     } catch (error) { next(error); }
@@ -19,7 +19,7 @@ export const transfersController = {
 
   async dispatch(req: Request, res: Response, next: NextFunction) {
     try {
-      const userId = (req as any).user.id;
+      const userId = (req as any).user.userId;
       const transfer = await transfersService.dispatch(req.params.id as string, userId);
       res.status(200).json({ success: true, data: transfer });
     } catch (error) { next(error); }
@@ -27,7 +27,7 @@ export const transfersController = {
 
   async receive(req: Request, res: Response, next: NextFunction) {
     try {
-      const userId = (req as any).user.id;
+      const userId = (req as any).user.userId;
       const transfer = await transfersService.receive(req.params.id as string, userId);
       res.status(200).json({ success: true, data: transfer });
     } catch (error) { next(error); }

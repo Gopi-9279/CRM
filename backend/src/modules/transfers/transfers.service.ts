@@ -1,9 +1,7 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../../db/prisma';
 import { z } from 'zod';
 import { NotFoundError, ConflictError } from '../../lib/errors';
 import crypto from 'crypto';
-
-const prisma = new PrismaClient();
 
 export const createTransferSchema = z.object({
   body: z.object({
@@ -54,12 +52,12 @@ export const transfersService = {
     return prisma.internalTransfer.create({
       data: {
         id: crypto.randomUUID(),
-        source_location_id: data.source_location_id,
-        destination_location_id: data.destination_location_id,
-        item_id: data.item_id,
-        batch_id: data.batch_id,
+        source_location: { connect: { id: data.source_location_id } },
+        destination_location: { connect: { id: data.destination_location_id } },
+        item: { connect: { id: data.item_id } },
+        batch: { connect: { id: data.batch_id } },
         quantity: data.quantity,
-        requested_by: userId,
+        requester: { connect: { id: userId } },
         status: 'REQUESTED',
       },
     });

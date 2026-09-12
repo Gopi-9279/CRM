@@ -1,10 +1,9 @@
+import { prisma } from '../../db/prisma';
 import bcrypt from 'bcryptjs';
-import { PrismaClient } from '@prisma/client';
 import { signAccessToken, signRefreshToken } from '../../lib/jwt';
 import { UnauthorizedError } from '../../lib/errors';
 import { z } from 'zod';
 
-const prisma = new PrismaClient();
 
 export const loginSchema = z.object({
   body: z.object({

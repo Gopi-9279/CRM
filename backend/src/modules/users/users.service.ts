@@ -1,9 +1,8 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../../db/prisma';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 import { ConflictError, NotFoundError } from '../../lib/errors';
 
-const prisma = new PrismaClient();
 
 export const createUserSchema = z.object({
   body: z.object({

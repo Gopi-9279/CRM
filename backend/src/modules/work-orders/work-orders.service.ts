@@ -1,9 +1,8 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../../db/prisma';
 import { z } from 'zod';
 import { NotFoundError, ConflictError, ForbiddenError } from '../../lib/errors';
 import crypto from 'crypto';
 
-const prisma = new PrismaClient();
 
 export const createWorkOrderSchema = z.object({
   body: z.object({
