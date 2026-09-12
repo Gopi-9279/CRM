@@ -11,6 +11,7 @@ import locationsRoutes from './modules/locations/locations.routes';
 import categoriesRoutes from './modules/categories/categories.routes';
 import itemsRoutes from './modules/items/items.routes';
 import batchesRoutes from './modules/batches/batches.routes';
+import inventoryRoutes from './modules/inventory/inventory.routes';
 
 const app = express();
 
@@ -41,6 +42,7 @@ app.use('/api/v1/locations', locationsRoutes);
 app.use('/api/v1/categories', categoriesRoutes);
 app.use('/api/v1/items', itemsRoutes);
 app.use('/api/v1/batches', batchesRoutes);
+app.use('/api/v1/inventory', inventoryRoutes);
 
 // Global Error Handler
 app.use(errorHandler);
