@@ -1,27 +1,34 @@
-import { ErrorRequestHandler } from 'express';
+import { Request, Response, NextFunction } from 'express';
+import { AppError } from '../lib/errors';
 import { logger } from '../lib/logger';
-import { z } from 'zod';
 
-export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
-  logger.error(err);
-
-  if (err instanceof z.ZodError) {
-    res.status(400).json({
+export const errorHandler = (
+  err: Error,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  if (err instanceof AppError) {
+    res.status(err.statusCode).json({
       success: false,
       error: {
-        code: 'VALIDATION_ERROR',
-        message: 'Invalid request data',
-        details: err.errors
-      }
+        code: err.code,
+        message: err.message,
+        details: err.details || {},
+      },
     });
     return;
   }
 
+  // Log unhandled errors
+  logger.error({ err }, 'Unhandled error');
+
   res.status(500).json({
     success: false,
     error: {
-      code: 'INTERNAL_SERVER_ERROR',
-      message: 'An unexpected error occurred'
-    }
+      code: 'INTERNAL_ERROR',
+      message: 'An unexpected error occurred',
+      details: {},
+    },
   });
 };

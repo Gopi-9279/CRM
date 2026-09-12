@@ -2,7 +2,10 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
+import pinoHttp from 'pino-http';
 import { logger } from './lib/logger';
+import { errorHandler } from './middleware/errorHandler';
+import authRoutes from './modules/auth/auth.routes';
 
 const app = express();
 
@@ -19,10 +22,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Request logging middleware
-app.use((req, res, next) => {
-  logger.info({ method: req.method, url: req.url }, 'Incoming request');
-  next();
-});
+app.use(pinoHttp({ logger }));
 
 // Health check
 app.get('/health', (req, res) => {
@@ -30,5 +30,9 @@ app.get('/health', (req, res) => {
 });
 
 // Routes will be mounted here
+app.use('/api/v1/auth', authRoutes);
+
+// Global Error Handler
+app.use(errorHandler);
 
 export default app;
