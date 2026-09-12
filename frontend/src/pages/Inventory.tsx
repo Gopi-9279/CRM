@@ -7,6 +7,7 @@ import { useAuth } from '../contexts/AuthContext';
 
 export default function Inventory() {
   const { user } = useAuth();
+  const canAdjustInventory = user?.role === 'ADMIN' || user?.role === 'OPERATIONS';
   const [inventory, setInventory] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
@@ -97,7 +98,7 @@ export default function Inventory() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-warning text-right">{Number(row.reserved_quantity)}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-success text-right font-bold">{Number(row.physical_quantity) - Number(row.reserved_quantity)}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      {(user?.role === 'ADMIN' || user?.role === 'OPERATIONS' || user?.role?.name === 'ADMIN' || user?.role?.name === 'OPERATIONS') && (
+                      {canAdjustInventory && (
                         <Button variant="outline" size="sm" onClick={() => openAdjustModal(row)}>
                           Adjust
                         </Button>

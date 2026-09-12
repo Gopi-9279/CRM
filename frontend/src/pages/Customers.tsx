@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../lib/axios';
 import { Badge } from '../components/ui/Badge';
-import { Button } from '../components/ui/Button';
 
 export default function Customers() {
   const [customers, setCustomers] = useState<any[]>([]);
