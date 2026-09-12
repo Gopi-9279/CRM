@@ -13,6 +13,9 @@ export default function Dashboard() {
             <h1 className="text-xl font-bold text-text-primary">Mini CRP</h1>
             <nav className="flex space-x-4">
               <Link to="/inventory" className="text-sm font-medium text-text-secondary hover:text-primary">Inventory</Link>
+              <Link to="/work-orders" className="text-sm font-medium text-text-secondary hover:text-primary">Work Orders</Link>
+              <Link to="/internal-transfers" className="text-sm font-medium text-text-secondary hover:text-primary">Internal Transfers</Link>
+              <Link to="/customer-orders" className="text-sm font-medium text-text-secondary hover:text-primary">Customer Orders</Link>
             </nav>
           </div>
           <div className="flex items-center space-x-4">
