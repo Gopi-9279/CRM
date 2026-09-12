@@ -1,5 +1,6 @@
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from '../components/ui/Button';
+import { Link } from 'react-router-dom';
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -8,7 +9,12 @@ export default function Dashboard() {
     <div className="min-h-screen bg-background">
       <header className="bg-surface shadow">
         <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          <h1 className="text-xl font-bold text-text-primary">Mini CRP</h1>
+          <div className="flex items-center space-x-8">
+            <h1 className="text-xl font-bold text-text-primary">Mini CRP</h1>
+            <nav className="flex space-x-4">
+              <Link to="/inventory" className="text-sm font-medium text-text-secondary hover:text-primary">Inventory</Link>
+            </nav>
+          </div>
           <div className="flex items-center space-x-4">
             <span className="text-sm text-text-secondary">
               Logged in as {user?.name} ({user?.role})
